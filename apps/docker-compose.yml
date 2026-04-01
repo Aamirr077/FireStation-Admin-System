@@ -1,0 +1,53 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: ubs-api
+    restart: unless-stopped
+    env_file:
+      - .env.backend
+    ports:
+      - "4000:3000"
+
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4000
+    container_name: ubs-admin
+    restart: unless-stopped
+    env_file:
+      - .env.admin
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+  driver:
+    build:
+      context: .
+      dockerfile: Dockerfile.driver
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4000
+    container_name: ubs-driver
+    restart: unless-stopped
+    env_file:
+      - .env.driver
+    ports:
+      - "3002:3000"
+    depends_on:
+      - api
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: ubs-npm
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+    volumes:
+      - ./data/npm:/data
+      - ./data/letsencrypt:/etc/letsencrypt

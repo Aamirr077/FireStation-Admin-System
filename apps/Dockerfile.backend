@@ -1,0 +1,34 @@
+FROM node:20-alpine AS deps
+WORKDIR /app
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY tsconfig.base.json ./
+COPY . .
+
+RUN pnpm install --frozen-lockfile
+
+# ---------------------
+
+FROM node:20-alpine AS builder
+WORKDIR /app
+RUN corepack enable
+
+COPY --from=deps /app /app
+
+RUN pnpm --filter @ubs/api build
+
+# ---------------------
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+RUN corepack enable
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+COPY --from=builder /app /app
+
+EXPOSE 3000
+
+CMD ["pnpm","--filter","@ubs/api","start"]

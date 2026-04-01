@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+* { border-radius: 0 !important; }
+html, body { height: 100%; }
+body { margin: 0; }
