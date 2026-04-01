@@ -1,9 +1,12 @@
 import cors from "cors";
-import { env } from "../config/env.js";
 
 export const corsMw = cors({
-  origin: [env.CORS_ORIGIN_ADMIN, env.CORS_ORIGIN_DRIVER],
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
+  origin: [
+    "http://localhost:3000",
+    "https://fire-station-admin.vercel.app",
+    "https://fire-station-users.vercel.app",
+  ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 });
